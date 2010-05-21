@@ -101,6 +101,9 @@ public:
 			usleep(DelayResponse_us);
 
 			SerialResponse<TResponseMask> response;
+#ifdef _DEBUG_INCOMING_SERIAL_DATA_
+			cout<<endl<<"Transmission from SerialDevice:"<<endl;
+#endif
 			while(this->rdbuf()->in_avail()>0)
 			{
 				//TODO: ADD progress bar caller ...
@@ -114,6 +117,9 @@ public:
 				usleep(DelayChar_us);
 			}
 			this->Close();
+#ifdef _DEBUG_INCOMING_SERIAL_DATA_
+			cout<<endl<<"Transmission Ended"<<endl;
+#endif
 			return response;
 		}
 
