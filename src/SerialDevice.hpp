@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <string>
-#include "SerialResponse.h"
+#include "SerialResponse.hpp"
 #include "LibSerial/SerialStream.h"
 
 namespace LibSerial{

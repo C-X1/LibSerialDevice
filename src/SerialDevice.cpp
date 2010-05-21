@@ -1,4 +1,4 @@
-#include "SerialDevice.h"
+#include "SerialDevice.hpp"
 
 using namespace LibSerial;
 

@@ -1,4 +1,4 @@
-#include "SerialResponse.h"
+#include "SerialResponse.hpp"
 
 
 namespace LibSerial {
