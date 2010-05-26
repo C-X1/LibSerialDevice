@@ -75,8 +75,9 @@ public:
 												  unsigned int size_info_location,
 												  unsigned int size_info_len,
 												  bool small_endian,
-												  unsigned int size_repetitiv,
-												  void (*progressbar_fnc)(unsigned int, unsigned int) )
+												  unsigned int size_repetitive,
+												  void *progressbar_object,
+												  void (*progressbar_function)(void* progressbar_object,unsigned int current_byte, unsigned int byte_amount))
 		{
 
 		    //Open interface file
@@ -136,30 +137,37 @@ public:
 
 
 				//Doing progressbar stuff
-				if(*progressbar_fnc != 0) //Is a progress bar function defined?
+				if(*progressbar_function != 0) //Is a progress bar function defined?
 				{
 					//if repetitive amount info len is 0 or repetitive data sets are 0 set amount of bytes to header size
-					if((size_info_len == 0 || size_repetitiv==0) && size_info_header != 0 )
+					if((size_info_len == 0 || size_repetitive==0) && size_info_header != 0 )
 					{
 						size_info_transmission = size_info_header;
 					}
 
 					if(current_byte >= size_info_location && current_size_info_byte < size_info_len)
 					{
-						size_info|=(incomingdata<<((current_size_info_byte)*8)); //place byte in variable
-						current_size_info_byte++; //which byte of the repetitive information length is it?
+						if(!small_endian)
+						{
+							size_info|=(incomingdata<<((current_size_info_byte)*8)); //place byte in variable
+							current_size_info_byte++; //which byte of the repetitive information length is it?
+						}
+						else
+						{
+							//TODO Not implemented yet
+						}
 					}
 
 					if( current_byte == size_info_len + size_info_location)
 					{
 						//Calculate Size of whole Transmission
-						size_info_transmission=size_info*size_repetitiv+size_info_header;
+						size_info_transmission=size_info*size_repetitive+size_info_header;
 					}
 
 					if(size_info_transmission != 0)
 					{
 						//Send current_byte number and byte amount to progressbar
-						progressbar_fnc(current_byte,size_info_transmission);
+						progressbar_function(progressbar_object,current_byte,size_info_transmission);
 					}
 
 				}
