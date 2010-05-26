@@ -168,7 +168,6 @@ public:
 
 
 			}
-			std::cout<<"real size"<<current_byte<<std::endl;
 			this->Close();
 #ifdef _DEBUG_INCOMING_SERIAL_DATA_
 			cout<<endl<<"Transmission Ended"<<endl;
