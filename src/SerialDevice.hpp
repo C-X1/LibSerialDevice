@@ -68,7 +68,15 @@ public:
 		 */
 
 		template <class TResponseMask>
-		SerialResponse<TResponseMask> SendCommand(std::string Command, unsigned int DelayResponse_us, unsigned int DelayChar_us)
+		SerialResponse<TResponseMask> SendCommand(std::string Command,
+												  unsigned int DelayResponse_us,
+												  unsigned int DelayChar_us,
+												  unsigned int size_info_header,
+												  unsigned int size_info_location,
+												  unsigned int size_info_len,
+												  bool small_endian,
+												  unsigned int size_repetitiv,
+												  void (*progressbar_fnc)(unsigned int, unsigned int) )
 		{
 
 		    //Open interface file
@@ -100,12 +108,20 @@ public:
 			//Wait for response of device
 			usleep(DelayResponse_us);
 
+
+
+
 			SerialResponse<TResponseMask> response;
 #ifdef _DEBUG_INCOMING_SERIAL_DATA_
 			cout<<endl<<"Transmission from SerialDevice:"<<endl;
 #endif
+
+			unsigned int current_byte=0;
+			unsigned long size_info=0, current_size_info_byte=0, size_info_transmission=0;
+
 			while(this->rdbuf()->in_avail()>0)
 			{
+
 				//TODO: ADD progress bar caller ...
 				//Get next char from interface
 				unsigned char incomingdata=this->get();
@@ -115,7 +131,44 @@ public:
 				response.push_back(incomingdata);
 				//Wait for next char to be transmitted
 				usleep(DelayChar_us);
+				//increase byte counter
+				current_byte++;
+
+
+				//Doing progressbar stuff
+				if(*progressbar_fnc != 0) //Is a progress bar function defined?
+				{
+					//if repetitive amount info len is 0 or repetitive data sets are 0 set amount of bytes to header size
+					if((size_info_len == 0 || size_repetitiv==0) && size_info_header != 0 )
+					{
+						size_info_transmission = size_info_header;
+					}
+
+					if(current_byte >= size_info_location && current_size_info_byte < size_info_len)
+					{
+						size_info|=(incomingdata<<((current_size_info_byte)*8)); //place byte in variable
+						current_size_info_byte++; //which byte of the repetitive information length is it?
+					}
+
+					if( current_byte == size_info_len + size_info_location)
+					{
+						//Calculate Size of whole Transmission
+						size_info_transmission=size_info*size_repetitiv+size_info_header;
+					}
+
+					if(size_info_transmission != 0)
+					{
+						//Send current_byte number and byte amount to progressbar
+						progressbar_fnc(current_byte,size_info_transmission);
+					}
+
+				}
+
+
+
+
 			}
+			std::cout<<"real size"<<current_byte<<std::endl;
 			this->Close();
 #ifdef _DEBUG_INCOMING_SERIAL_DATA_
 			cout<<endl<<"Transmission Ended"<<endl;
@@ -132,6 +185,9 @@ public:
 			ErrorMask.setError(ErrorNumber);
 			return ErrorMask;
 		}
+
+
+
 
 private:
 
