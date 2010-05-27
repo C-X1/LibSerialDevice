@@ -137,7 +137,7 @@ public:
 
 
 				//Doing progressbar stuff
-				if(*progressbar_function != 0) //Is a progress bar function defined?
+				if(*progressbar_function != 0 && progressbar_object != 0) //Is a progress bar function defined?
 				{
 					//if repetitive amount info len is 0 or repetitive data sets are 0 set amount of bytes to header size
 					if((size_info_len == 0 || size_repetitive==0) && size_info_header != 0 )
@@ -164,18 +164,15 @@ public:
 						size_info_transmission=size_info*size_repetitive+size_info_header;
 					}
 
-					if(size_info_transmission != 0)
-					{
-						//Send current_byte number and byte amount to progressbar
-						progressbar_function(progressbar_object,current_byte,size_info_transmission);
-					}
-
+					progressbar_function(progressbar_object,current_byte,size_info_transmission);
 				}
 
 
 
 
 			}
+			//std::cout<<current_byte<<":"<<size_info_transmission<<std::endl;
+
 			this->Close();
 #ifdef _DEBUG_INCOMING_SERIAL_DATA_
 			cout<<endl<<"Transmission Ended"<<endl;
