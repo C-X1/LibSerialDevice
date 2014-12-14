@@ -48,15 +48,22 @@ public:
 			SETFLOWCONTROL_FAILED	= -5
 		};
 
-		/**
-		 * Empty Constructor
-		 */
-		SerialDevice ( );
+        void initAttributes ( ) {
+                Manufacturer = "";
+                DeviceName = "";
+        }
 
 		/**
-		 * Empty Destructor
+         * Constructor
 		 */
-		virtual ~SerialDevice ( );
+        SerialDevice::SerialDevice ( ) {
+        initAttributes();
+        }
+
+		/**
+         * Destructor
+         */
+        SerialDevice::~SerialDevice ( ) { }
 
 		/**
 		 * Send command to the device.
